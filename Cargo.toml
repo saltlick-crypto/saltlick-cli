@@ -1,0 +1,33 @@
+[package]
+name = "saltlick-cli"
+version = "0.1.0"
+authors = ["Nick Stevens <nick@bitcurry.com>"]
+edition = "2018"
+description = "Command-line interface for interacting with saltlick encrypted files."
+documentation = "https://docs.rs/saltlick-cli"
+homepage = "https://github.com/saltlick-crypto/saltlick-cli"
+repository = "https://github.com/saltlick-crypto/saltlick-cli"
+keywords = ["cryptography", "file", "libsodium", "security", "streaming"]
+categories = ["command-line-utilities", "cryptography", "filesystem"]
+license = "Apache-2.0 OR MIT"
+
+[badges]
+travis-ci = { repository = "saltlick-crypto/saltlick-cli", branch = "master" }
+is-it-maintained-issue-resolution = { repository = "saltlick-crypto/saltlick-cli" }
+is-it-maintained-open-issues = { repository = "saltlick-crypto/saltlick-cli" }
+maintenance = { status = "actively-developed" }
+
+[[bin]]
+name = "saltlick"
+path = "src/main.rs"
+
+[dependencies]
+directories = "2.0"
+human-panic = "1.0"
+saltlick = "0.2"
+structopt = "0.3"
+
+[dev-dependencies]
+assert_fs = "0.13"
+doc-comment = "0.3"
+predicates = "1.0"
