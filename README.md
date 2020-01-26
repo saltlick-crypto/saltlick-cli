@@ -9,6 +9,15 @@
 
 Command-line interface for interacting with saltlick encrypted files.
 
+## Installation
+
+Saltlick CLI can be installed with cargo. The binary name for Saltlick CLI is
+`saltlick`.
+
+Note that the minimum supported version of Rust for saltlick is 1.39.0.
+
+    $ cargo install saltlick-cli
+
 ## Minimum Supported Rust Version (MSRV)
 
 This crate is guaranteed to compile on stable Rust 1.39.0 and up. It *might*
