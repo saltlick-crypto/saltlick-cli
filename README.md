@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.com/saltlick-crypto/saltlick-cli.svg?branch=master)](https://travis-ci.com/saltlick-crypto/saltlick-cli)
 [![Crate](https://img.shields.io/crates/v/saltlick-cli.svg)](https://crates.io/crates/saltlick-cli)
-[![API](https://docs.rs/saltlick-cli/badge.svg)](https://docs.rs/saltlick-cli)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/saltlick-crypto/saltlick-cli.svg)](http://isitmaintained.com/project/saltlick-crypto/saltlick-cli)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/saltlick-crypto/saltlick-cli.svg)](http://isitmaintained.com/project/saltlick-crypto/saltlick-cli)
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.39.0+-lightgray.svg)](https://github.com/saltlick-crypto/saltlick-cli#minimum-supported-rust-version-msrv)
