@@ -13,11 +13,15 @@ mod error;
 mod keychain;
 
 use std::fs::{File, OpenOptions};
-use std::io::{self, Read, Write};
+use std::io::{self, BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 
 use human_panic::setup_panic;
-use saltlick::{self, DecryptingReader, EncryptingWriter, PublicKey, SecretKey};
+use saltlick::{
+    self,
+    bufread::{SaltlickDecrypter, SaltlickEncrypter},
+    PublicKey, SecretKey,
+};
 
 use crate::cli::*;
 use crate::error::CliError;
@@ -25,16 +29,18 @@ use crate::keychain::Keychain;
 
 /// Opens and returns `path` for `Read` if it is `Some`, otherwise returns
 /// stdin.
-fn read_or_stdin(path: Option<impl AsRef<Path>>) -> Result<Box<dyn Read>, CliError> {
+fn read_or_stdin(path: Option<impl AsRef<Path>>) -> Result<Box<dyn BufRead>, CliError> {
     if let Some(input_file) = path.as_ref() {
-        Ok(Box::new(File::open(input_file).map_err(|error| {
-            CliError::InputFileIoError {
-                error,
-                path: input_file.as_ref().to_path_buf(),
-            }
-        })?))
+        Ok(Box::new(
+            File::open(input_file)
+                .map(BufReader::new)
+                .map_err(|error| CliError::InputFileIoError {
+                    error,
+                    path: input_file.as_ref().to_path_buf(),
+                })?,
+        ))
     } else {
-        Ok(Box::new(io::stdin()))
+        Ok(Box::new(BufReader::new(io::stdin())))
     }
 }
 
@@ -137,11 +143,11 @@ fn decrypt(args: DecryptArgs) -> Result<(), CliError> {
                 .map(|keypair| keypair.secret().clone())
                 .ok()
         };
-        DecryptingReader::new_deferred(infile, lookup)
+        SaltlickDecrypter::new_deferred(infile, lookup)
     } else {
         let public = get_public_key(args.public.as_ref(), args.key.as_ref())?;
         let secret = get_secret_key(args.secret.as_ref(), args.key.as_ref())?;
-        DecryptingReader::new(public, secret, infile)
+        SaltlickDecrypter::new(public, secret, infile)
     };
     io::copy(&mut decrypter, &mut outfile).map_err(|error| CliError::StreamIoError { error })?;
     Ok(())
@@ -152,10 +158,10 @@ fn decrypt(args: DecryptArgs) -> Result<(), CliError> {
 /// reasonable default for encryption, unlike decryption.
 fn encrypt(args: EncryptArgs) -> Result<(), CliError> {
     let public = get_public_key(args.public.as_ref(), args.key.as_ref())?;
-    let mut infile = read_or_stdin(args.infile.as_ref())?;
-    let outfile = write_or_stdout(args.outfile.as_ref(), args.force)?;
-    let mut encrypter = EncryptingWriter::new(public, outfile);
-    io::copy(&mut infile, &mut encrypter).map_err(|error| CliError::StreamIoError { error })?;
+    let infile = read_or_stdin(args.infile.as_ref())?;
+    let mut outfile = write_or_stdout(args.outfile.as_ref(), args.force)?;
+    let mut encrypter = SaltlickEncrypter::new(public, infile);
+    io::copy(&mut encrypter, &mut outfile).map_err(|error| CliError::StreamIoError { error })?;
     Ok(())
 }
 
